@@ -19,7 +19,7 @@ export default function CoWriterPage() {
   const [availableBooks, setAvailableBooks] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8001/api/books")
+    fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books`)
       .then(res => res.json())
       .then(data => setAvailableBooks(data.books || []))
       .catch(() => setAvailableBooks([]));

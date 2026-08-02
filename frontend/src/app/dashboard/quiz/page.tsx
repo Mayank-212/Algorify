@@ -36,7 +36,7 @@ export default function PlayArenaPage() {
   const [availableBooks, setAvailableBooks] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8001/api/books").then(r => r.json()).then(d => setAvailableBooks(d.books || [])).catch(() => {});
+    fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books`).then(r => r.json()).then(d => setAvailableBooks(d.books || [])).catch(() => {});
   }, []);
 
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);

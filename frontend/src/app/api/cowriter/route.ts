@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     if (bookId) {
       try {
-        const pyRes = await fetch("http://127.0.0.1:8001/api/books/query", {
+        const pyRes = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books/query`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 

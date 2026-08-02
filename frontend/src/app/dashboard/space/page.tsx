@@ -29,7 +29,7 @@ export default function LearningSpacePage() {
 
   const fetchBooks = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8001/api/books");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books`);
       if (res.ok) {
         const data = await res.json();
         setBooks(data.books);
@@ -48,7 +48,7 @@ export default function LearningSpacePage() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://127.0.0.1:8001/api/books/upload", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books/upload`, {
         method: "POST",
         body: formData,
       });
@@ -69,7 +69,7 @@ export default function LearningSpacePage() {
     setLoadingQuery(true);
     setAnswer("");
     try {
-      const res = await fetch("http://127.0.0.1:8001/api/books/query", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/books/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ document_id: selectedBook, query }),
@@ -88,7 +88,7 @@ export default function LearningSpacePage() {
     setLoadingYt(true);
     setYtNotes("");
     try {
-      const res = await fetch("http://127.0.0.1:8001/api/youtube/notes", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8001'}/api/youtube/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: ytUrl }),
