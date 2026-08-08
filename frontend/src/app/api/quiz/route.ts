@@ -1,17 +1,16 @@
 import { Mistral } from "@mistralai/mistralai";
 import { NextResponse } from "next/server";
-import { mockLearningTwin } from "@/lib/mock-data";
 
 export async function POST(req: Request) {
   try {
-    const { topic, difficulty, count = 5, bookId } = await req.json();
+    const { topic, difficulty, count = 5, bookId, profile } = await req.json();
 
     if (!process.env.MISTRAL_API_KEY) {
       return NextResponse.json({ error: "Missing MISTRAL_API_KEY" }, { status: 500 });
     }
     
     const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
-    const twin = mockLearningTwin;
+    const p = profile || { learningStyle: "visual", preferredExplanationStyle: "detailed" };
 
     let contextText = "";
     if (bookId) {
@@ -37,17 +36,17 @@ EACH question object MUST have this exact schema:
   "topic": "string",
   "difficulty": "string",
   "question": "string",
-  "options": ["string", "string", "string", "string"],
+  "options": ["string", "string", "string", "string"], // MUST be 4 COMPLETELY DISTINCT options (1 correct, 3 highly plausible but clearly different incorrect distractors). NO overlapping or vaguely similar options.
   "correctAnswer": integer (0 to 3),
-  "explanation": "string",
-  "misconception": "string",
-  "whyReasonable": "string"
+  "explanation": "string", // A supportive, encouraging explanation of why the correct answer is right.
+  "misconception": "string", // A brief note on what the student might have misunderstood.
+  "whyReasonable": "string" // Why the trap distractor seemed plausible (with an empathetic tone).
 }
 Output absolutely nothing except valid JSON. Do not use markdown blocks (\`\`\`json). Just the raw JSON object.`;
 
     const userPrompt = `Generate a ${difficulty} difficulty multiple-choice quiz about "${topic}".
-The student's learning style is ${twin.learningStyle} and they prefer ${twin.preferredExplanationStyle} explanations. 
-Make sure the explanations are tailored to this style.${contextText}`;
+The student's learning style is ${p.learningStyle} and they prefer ${p.preferredExplanationStyle} explanations. 
+Make sure the explanations are tailored to this style. Write the explanations and misconceptions in a deeply humanized, natural, conversational tone, as if a mentor is talking directly to the student in a personal notebook. Do NOT sound like an AI robot.${contextText}`;
 
     const response = await client.chat.complete({
       model: "mistral-large-latest",
@@ -65,7 +64,28 @@ Make sure the explanations are tailored to this style.${contextText}`;
     }
 
     const parsedData = JSON.parse(content as string);
-    return NextResponse.json({ questions: parsedData.questions });
+    
+    // Shuffle options to ensure correctAnswer is randomized
+    const questions = parsedData.questions.map((q: any) => {
+      if (!q.options || q.correctAnswer === undefined) return q;
+      
+      const options = [...q.options];
+      const correctOptionText = options[q.correctAnswer];
+      
+      // Fisher-Yates shuffle
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      
+      return {
+        ...q,
+        options,
+        correctAnswer: options.indexOf(correctOptionText)
+      };
+    });
+
+    return NextResponse.json({ questions });
   } catch (error: any) {
     console.error("Mistral Quiz API Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

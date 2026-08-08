@@ -13,7 +13,7 @@ export function Navbar() {
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border-primary bg-bg-primary/80 backdrop-blur-xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border-primary bg-bg-primary/80 backdrop-"
     >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
@@ -47,7 +47,7 @@ export function Navbar() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden border-t border-border-primary bg-bg-primary/95 backdrop-blur-xl"
+          className="md:hidden border-t border-border-primary bg-bg-primary/95 backdrop-"
         >
           <div className="px-4 py-4 flex flex-col gap-3">
             <a href="#features" className="text-sm text-text-muted py-2" onClick={() => setOpen(false)}>Features</a>

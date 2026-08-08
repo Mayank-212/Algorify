@@ -64,36 +64,32 @@ export default function CoWriterPage() {
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 h-[calc(100vh-6rem)] lg:h-[calc(100vh-7rem)] relative">
-      {/* Background Ambient Glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[10%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-accent-amber/10 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-[20%] right-[10%] w-[25vw] h-[25vw] rounded-full bg-accent-purple/10 blur-[100px] mix-blend-screen" />
-      </div>
+
 
       {/* Editor */}
       <div className="flex-1 flex flex-col space-y-4 relative z-10 min-h-0">
         <div>
-          <h1 className="text-2xl font-black flex items-center gap-2 drop-shadow-sm"><PenTool className="w-6 h-6 text-accent-amber" /> AI Co-Writer</h1>
+          <h1 className="text-2xl font-black flex items-center gap-2 drop-shadow-none"><PenTool className="w-6 h-6 text-accent-amber" /> AI Co-Writer</h1>
           <p className="text-sm text-text-muted mt-1 font-medium">Collaborate with your personalized AI Twin to draft, refine, and learn.</p>
         </div>
         
-        <Card variant="glass" className="flex-1 flex flex-col overflow-hidden p-0 border border-border-primary bg-bg-glass backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] relative group">
+        <Card variant="glass" className="flex-1 flex flex-col overflow-hidden p-0 border border-border-primary bg-bg-glass backdrop- shadow-none shadow-none relative group">
           <div className="border-b border-border-primary bg-bg-card p-2 md:p-3 flex items-center gap-2 flex-wrap">
             <button className="text-[11px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary px-3 py-1.5 rounded-lg hover:bg-bg-tertiary transition-colors flex items-center gap-2">
               <Save className="w-3.5 h-3.5" /> Save
             </button>
             <div className="flex-1" />
             <div className="flex gap-2 flex-wrap">
-              <button onClick={() => processText("improve")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-accent-amber hover:text-text-primary px-3 py-1.5 rounded-lg bg-accent-amber/20 border border-accent-amber/30 hover:bg-accent-amber hover:border-accent-amber transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <button onClick={() => processText("improve")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-accent-amber hover:text-text-primary px-3 py-1.5 rounded-lg bg-accent-amber/20 border border-accent-amber/30 hover:bg-accent-amber hover:border-accent-amber transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-none">
                 <Wand2 className="w-3.5 h-3.5" /> Improve
               </button>
-              <button onClick={() => processText("expand")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-emerald-400/20 border border-emerald-400/30 hover:bg-emerald-50 hover:border-emerald-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-[0_0_15px_rgba(52,211,153,0.2)]">
+              <button onClick={() => processText("expand")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-emerald-400/20 border border-emerald-400/30 hover:bg-emerald-50 hover:border-emerald-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-none">
                 <Maximize2 className="w-3.5 h-3.5" /> Expand
               </button>
-              <button onClick={() => processText("simplify")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-cyan-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-cyan-400/20 border border-cyan-400/30 hover:bg-cyan-500 hover:border-cyan-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+              <button onClick={() => processText("simplify")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-cyan-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-cyan-400/20 border border-cyan-400/30 hover:bg-cyan-500 hover:border-cyan-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-none">
                 <Minimize2 className="w-3.5 h-3.5" /> Simplify
               </button>
-              <button onClick={() => processText("teach")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-purple-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-purple-400/20 border border-purple-400/30 hover:bg-purple-500 hover:border-purple-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+              <button onClick={() => processText("teach")} disabled={isProcessing} className="text-[10px] font-black uppercase tracking-widest text-purple-400 hover:text-text-primary px-3 py-1.5 rounded-lg bg-purple-400/20 border border-purple-400/30 hover:bg-purple-500 hover:border-purple-500 transition-all duration-300 flex items-center gap-1.5 disabled:opacity-50 shadow-none">
                 <GraduationCap className="w-3.5 h-3.5" /> Teach Me
               </button>
             </div>
@@ -107,8 +103,8 @@ export default function CoWriterPage() {
               placeholder="Start typing your draft here..."
             />
             {isProcessing && (
-              <div className="absolute inset-0 bg-bg-tertiary backdrop-blur-sm flex items-center justify-center pointer-events-none transition-all duration-300">
-                <div className="bg-bg-primary border border-accent-amber/50 p-4 md:p-5 rounded-2xl flex items-center gap-3 text-accent-amber font-black shadow-[0_0_40px_rgba(245,158,11,0.3)] animate-pulse text-sm">
+              <div className="absolute inset-0 bg-bg-tertiary backdrop- flex items-center justify-center pointer-events-none transition-all duration-300">
+                <div className="bg-bg-primary border border-accent-amber/50 p-4 md:p-5 rounded-2xl flex items-center gap-3 text-accent-amber font-black shadow-none animate-pulse text-sm">
                   <Loader2 className="w-5 h-5 animate-spin" /> {selectedBook ? "Retrieving Citations & Writing..." : "Twin is thinking..."}
                 </div>
               </div>
@@ -119,17 +115,17 @@ export default function CoWriterPage() {
 
       {/* AI Assistant Sidebar */}
       <div className="w-full md:w-72 flex flex-col space-y-4 pt-0 md:pt-[54px] relative z-10 shrink-0 min-h-0">
-        <h3 className="font-bold text-sm flex items-center gap-2 text-text-primary drop-shadow-sm"><Sparkles className="w-4 h-4 text-accent-purple" /> Context Engine</h3>
+        <h3 className="font-bold text-sm flex items-center gap-2 text-text-primary drop-shadow-none"><Sparkles className="w-4 h-4 text-accent-purple" /> Context Engine</h3>
         
         {/* Dynamic Context Settings */}
-        <Card variant="glass" className="p-4 space-y-5 bg-bg-glass backdrop-blur-3xl border border-border-primary shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <Card variant="glass" className="p-4 space-y-5 bg-bg-glass backdrop- border border-border-primary shadow-none">
           
           {/* Memory Integration Toggle */}
           <div 
             onClick={() => setUseMemoryContext(!useMemoryContext)}
-            className={`p-3 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center gap-3 ${useMemoryContext ? 'border-accent-purple/50 bg-accent-purple/20 text-accent-purple shadow-[inset_0_0_15px_rgba(168,85,247,0.2)]' : 'border-border-primary bg-bg-card text-text-muted hover:border-border-hover'}`}
+            className={`p-3 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center gap-3 ${useMemoryContext ? 'border-accent-purple/50 bg-accent-purple/20 text-accent-purple shadow-none' : 'border-border-primary bg-bg-card text-text-muted hover:border-border-hover'}`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${useMemoryContext ? 'bg-accent-purple text-text-primary shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-bg-tertiary text-text-muted'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${useMemoryContext ? 'bg-accent-purple text-text-primary shadow-none' : 'bg-bg-tertiary text-text-muted'}`}>
               <Brain className="w-4 h-4" />
             </div>
             <div>
@@ -137,8 +133,8 @@ export default function CoWriterPage() {
               <p className="text-[9px] mt-0.5 text-text-muted">Link AI to your weaknesses</p>
             </div>
             <div className="flex-1" />
-            <div className={`w-8 h-4 rounded-full flex items-center p-0.5 transition-colors ${useMemoryContext ? 'bg-accent-purple shadow-[0_0_10px_rgba(168,85,247,0.8)]' : 'bg-bg-primary border border-border-hover'}`}>
-              <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform duration-300 ${useMemoryContext ? 'translate-x-4' : 'translate-x-0'}`} />
+            <div className={`w-8 h-4 rounded-full flex items-center p-0.5 transition-colors ${useMemoryContext ? 'bg-accent-purple shadow-none' : 'bg-bg-primary border border-border-hover'}`}>
+              <div className={`w-3 h-3 bg-white rounded-full shadow-none transition-transform duration-300 ${useMemoryContext ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
           </div>
 
@@ -161,13 +157,13 @@ export default function CoWriterPage() {
         </Card>
 
         {/* Suggestions */}
-        <Card variant="glass" className="flex-1 p-4 overflow-y-auto bg-bg-glass backdrop-blur-3xl border border-border-primary shadow-[0_8px_32px_rgba(0,0,0,0.5)] custom-scrollbar min-h-[150px]">
+        <Card variant="glass" className="flex-1 p-4 overflow-y-auto bg-bg-glass backdrop- border border-border-primary shadow-none custom-scrollbar min-h-[150px]">
           <div className="space-y-3">
             
-            <div className="p-4 rounded-xl bg-accent-amber/10 border border-accent-amber/20 text-sm shadow-[inset_0_0_10px_rgba(245,158,11,0.1)]">
+            <div className="p-4 rounded-xl bg-accent-amber/10 border border-accent-amber/20 text-sm shadow-none">
               <strong className="text-accent-amber block mb-1.5 text-[10px] uppercase tracking-widest font-black flex items-center gap-1.5"><Sparkles className="w-3 h-3"/> Next Steps</strong>
               <p className="text-text-secondary leading-snug font-medium text-xs">Let your Twin automatically generate the next paragraph based on context.</p>
-              <button onClick={() => processText("continue")} disabled={isProcessing} className="w-full mt-3 px-3 py-2 bg-accent-amber/20 hover:bg-accent-amber text-accent-amber hover:text-black rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_10px_rgba(245,158,11,0.2)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] flex items-center justify-center gap-1.5 disabled:opacity-50">
+              <button onClick={() => processText("continue")} disabled={isProcessing} className="w-full mt-3 px-3 py-2 bg-accent-amber/20 hover:bg-accent-amber text-accent-amber hover:text-black rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-none hover:shadow-none flex items-center justify-center gap-1.5 disabled:opacity-50">
                 Continue Writing <ArrowRight className="w-3 h-3" />
               </button>
             </div>

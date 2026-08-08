@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-accent-blue to-accent-purple text-white shadow-lg shadow-accent-blue/25 hover:shadow-accent-blue/40 hover:brightness-110",
+          "bg-gradient-to-r from-accent-blue to-accent-purple text-white shadow-none shadow-accent-blue/25 hover:shadow-accent-blue/40 hover:brightness-110",
         secondary:
           "bg-bg-tertiary text-text-primary border border-border-primary hover:bg-bg-card-hover hover:border-border-hover",
         ghost:

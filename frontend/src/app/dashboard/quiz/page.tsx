@@ -10,7 +10,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import { mockLearningTwin } from "@/lib/mock-data";
 import { useMemory } from "@/lib/memory-store";
 import {
   Brain, CheckCircle2, XCircle, ArrowRight, RotateCcw,
@@ -22,14 +21,14 @@ import type { QuizQuestion } from "@/types";
 type Phase = "lobby" | "battle" | "result";
 
 export default function PlayArenaPage() {
-  const { addXP, recordMistake, recordMastery, recordQuizResults } = useMemory();
+  const { addXP, recordMistake, recordMastery, recordQuizResults, profile } = useMemory();
   const [phase, setPhase] = useState<Phase>("lobby");
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
 
-  const [topic, setTopic] = useState(mockLearningTwin.weakTopics[0]);
+  const [topic, setTopic] = useState(profile.weaknesses.length > 0 ? profile.weaknesses[0] : "General Knowledge");
   const [count, setCount] = useState(5);
   const [sourceType, setSourceType] = useState<"general" | "book">("general");
   const [bookId, setBookId] = useState("");
@@ -66,8 +65,6 @@ export default function PlayArenaPage() {
 
   const [report, setReport] = useState("");
   const [generatingReport, setGeneratingReport] = useState(false);
-
-  const twin = mockLearningTwin;
 
   // Global game loop (timer)
   useEffect(() => {
@@ -106,7 +103,8 @@ export default function PlayArenaPage() {
           topic: sourceType === "book" ? "the core concepts covered in the provided textbook" : topic, 
           difficulty, 
           count, 
-          bookId: sourceType === "book" ? bookId : undefined 
+          bookId: sourceType === "book" ? bookId : undefined,
+          profile
         }),
       });
       const data = await res.json();
@@ -240,7 +238,7 @@ export default function PlayArenaPage() {
       }));
       const res = await fetch("/api/report", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ history, twin }),
+        body: JSON.stringify({ history, profile }),
       });
       const reader = res.body?.getReader();
       if (!reader) throw new Error("No reader");
@@ -259,35 +257,31 @@ export default function PlayArenaPage() {
   if (phase === "lobby") {
     return (
       <div className="max-w-4xl mx-auto min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] py-6 flex flex-col justify-center items-center relative">
-        {/* Ambient Glowing Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[20%] left-[10%] w-64 h-64 md:w-[30vw] md:h-[30vw] rounded-full bg-accent-purple/20 blur-[100px] mix-blend-screen" />
-          <div className="absolute bottom-[10%] right-[10%] w-48 h-48 md:w-[25vw] md:h-[25vw] rounded-full bg-accent-amber/20 blur-[120px] mix-blend-screen" />
-        </div>
+
         
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.5, ease: "easeOut" }} className="w-full max-w-2xl text-center space-y-5 relative z-10 px-4">
           
           <div className="relative inline-block mb-1">
-            <div className="absolute inset-0 bg-accent-amber blur-3xl opacity-30 animate-pulse" />
-            <Crown className="w-10 h-10 md:w-12 md:h-12 mx-auto text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)] relative z-10" />
+            <div className="absolute inset-0 bg-accent-amber  opacity-30 animate-pulse" />
+            <Crown className="w-10 h-10 md:w-12 md:h-12 mx-auto text-amber-400 drop-shadow-none relative z-10" />
           </div>
           
-          <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-br from-amber-400 via-rose-500 to-purple-600 bg-clip-text text-transparent uppercase tracking-tighter drop-shadow-sm">
+          <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-accent-cyan to-accent-purple bg-clip-text text-transparent uppercase tracking-tighter drop-shadow-none">
             Play Arena
           </h1>
           <p className="text-xs md:text-sm text-text-secondary max-w-md mx-auto font-medium">
             Face off against the AI Concept Boss. Equip your power-ups, maintain your streak, and conquer your weaknesses.
           </p>
 
-          <Card variant="glass" className="p-1 bg-bg-glass backdrop-blur-3xl border border-border-primary text-left shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] rounded-3xl mt-4">
+          <Card variant="glass" className="p-1 bg-bg-glass backdrop- border border-border-primary text-left shadow-none shadow-none rounded-3xl mt-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 p-2 sm:p-3">
               {(["easy", "medium", "hard"] as const).map((d) => (
                 <button key={d} onClick={() => setDifficulty(d)}
                   className={`py-3 px-4 rounded-xl font-black uppercase tracking-widest transition-all duration-300 border-2 relative overflow-hidden group ${
                     difficulty === d
-                      ? d === "easy" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)] sm:scale-105"
-                        : d === "medium" ? "bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-[0_0_30px_rgba(245,158,11,0.2)] sm:scale-105"
-                        : "bg-rose-500/20 text-rose-400 border-rose-500/50 shadow-[0_0_30px_rgba(244,63,94,0.2)] sm:scale-105"
+                      ? d === "easy" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-none sm:scale-105"
+                        : d === "medium" ? "bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-none sm:scale-105"
+                        : "bg-rose-500/20 text-rose-400 border-rose-500/50 shadow-none sm:scale-105"
                       : "bg-bg-tertiary text-text-muted border-border-primary hover:bg-bg-tertiary hover:text-text-primary hover:border-border-hover"
                   }`}>
                   <div className="relative z-10 text-center">{d}</div>
@@ -300,8 +294,8 @@ export default function PlayArenaPage() {
               <div>
                 <label className="text-xs font-bold text-text-muted uppercase tracking-widest mb-2 flex items-center gap-2"><Brain className="w-4 h-4"/> Source Material</label>
                 <div className="flex flex-col sm:flex-row gap-2 mb-3 bg-bg-card p-1 rounded-xl">
-                  <button onClick={() => setSourceType("general")} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all duration-300 ${sourceType === "general" ? "bg-accent-blue/20 text-accent-blue shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "text-text-muted hover:text-text-primary"}`}>General AI Engine</button>
-                  <button onClick={() => setSourceType("book")} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all duration-300 ${sourceType === "book" ? "bg-accent-purple/20 text-accent-purple shadow-[0_0_15px_rgba(168,85,247,0.3)]" : "text-text-muted hover:text-text-primary"}`}>Learning Space Book</button>
+                  <button onClick={() => setSourceType("general")} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all duration-300 ${sourceType === "general" ? "bg-accent-blue/20 text-accent-blue shadow-none" : "text-text-muted hover:text-text-primary"}`}>Algorify General Knowledge</button>
+                  <button onClick={() => setSourceType("book")} className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all duration-300 ${sourceType === "book" ? "bg-accent-purple/20 text-accent-purple shadow-none" : "text-text-muted hover:text-text-primary"}`}>Learning Space Book</button>
                 </div>
                 {sourceType === "book" ? (
                   <select value={bookId} onChange={(e) => setBookId(e.target.value)} className="w-full bg-bg-card border border-border-primary rounded-xl p-3 text-sm text-text-primary outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple transition-all cursor-pointer">
@@ -311,10 +305,10 @@ export default function PlayArenaPage() {
                 ) : (
                   <select value={topic} onChange={(e) => setTopic(e.target.value)} className="w-full bg-bg-card border border-border-primary rounded-xl p-3 text-sm text-text-primary outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all cursor-pointer font-medium truncate">
                     <optgroup label="Your Weaknesses">
-                      {twin.weakTopics.map(t => <option key={t} value={t}>{t}</option>)}
+                      {profile.weaknesses.map(t => <option key={t} value={t}>{t}</option>)}
                     </optgroup>
                     <optgroup label="Your Strengths">
-                      {twin.strongTopics.map(t => <option key={t} value={t}>{t}</option>)}
+                      {profile.strengths.map(t => <option key={t} value={t}>{t}</option>)}
                     </optgroup>
                     <optgroup label="General Knowledge">
                       <option value="Random Mix">Random Mix</option>
@@ -342,7 +336,7 @@ export default function PlayArenaPage() {
                 <span className="flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 px-3 py-1.5 rounded-lg border border-cyan-500/20"><Snowflake className="w-3.5 h-3.5" /> {difficulty === 'easy' ? 2 : 1} Freeze</span>
                 <span className="flex items-center gap-1.5 bg-purple-500/10 text-purple-400 px-3 py-1.5 rounded-lg border border-purple-500/20"><SplitSquareHorizontal className="w-3.5 h-3.5" /> {difficulty === 'easy' ? 2 : 1} 50/50</span>
               </div>
-              <Button onClick={startQuiz} disabled={sourceType === "book" && !bookId} size="lg" className="w-full text-xs sm:text-sm h-10 sm:h-12 rounded-xl font-black tracking-widest uppercase bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-400 hover:via-rose-400 hover:to-purple-500 shadow-[0_0_40px_rgba(244,63,94,0.4)] hover:shadow-[0_0_60px_rgba(244,63,94,0.6)] hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none relative overflow-hidden group" isLoading={generating}>
+              <Button onClick={startQuiz} disabled={sourceType === "book" && !bookId} size="lg" className="w-full text-xs sm:text-sm h-10 sm:h-12 rounded-xl font-black tracking-widest uppercase bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-400 hover:via-rose-400 hover:to-purple-500 shadow-none hover:shadow-none hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none relative overflow-hidden group" isLoading={generating}>
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 flex items-center justify-center"><Swords className="w-4 h-4 mr-2" /> Enter Arena</span>
               </Button>
@@ -364,9 +358,9 @@ export default function PlayArenaPage() {
           <div className={`absolute inset-0 opacity-20 ${isVictory ? "bg-emerald-500" : "bg-rose-500"}`} />
           <div className="relative p-6 sm:p-8 text-center">
             {isVictory ? (
-              <Trophy className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.5)] mb-4" />
+              <Trophy className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-amber-400 drop-shadow-none mb-4" />
             ) : (
-              <Skull className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-rose-500 drop-shadow-[0_0_30px_rgba(244,63,94,0.5)] mb-4" />
+              <Skull className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-rose-500 drop-shadow-none mb-4" />
             )}
             <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight mb-2">
               {isVictory ? "Concept Defeated!" : "You Died"}
@@ -376,11 +370,11 @@ export default function PlayArenaPage() {
             </p>
             
             <div className="flex justify-center gap-6 mt-6">
-              <div className="bg-bg-tertiary/50 p-4 rounded-xl min-w-[100px] backdrop-blur-md">
+              <div className="bg-bg-tertiary/50 p-4 rounded-xl min-w-[100px] backdrop-">
                 <p className="text-2xl font-black text-amber-400">+{xp}</p>
                 <p className="text-[10px] uppercase tracking-wider font-bold text-text-muted mt-1">XP Earned</p>
               </div>
-              <div className="bg-bg-tertiary/50 p-4 rounded-xl min-w-[100px] backdrop-blur-md">
+              <div className="bg-bg-tertiary/50 p-4 rounded-xl min-w-[100px] backdrop-">
                 <p className="text-2xl font-black text-rose-400">{Math.round(100 - playerHp)}</p>
                 <p className="text-[10px] uppercase tracking-wider font-bold text-text-muted mt-1">Dmg Taken</p>
               </div>
@@ -389,7 +383,7 @@ export default function PlayArenaPage() {
         </Card>
 
         {report ? (
-          <div className="mt-8 mb-6 border border-border-primary rounded-2xl bg-bg-glass backdrop-blur-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+          <div className="mt-8 mb-6 border border-border-primary rounded-2xl bg-bg-glass backdrop- overflow-hidden shadow-none shadow-none">
             <div className="px-5 py-3 border-b border-border-primary bg-gradient-to-r from-accent-purple/20 to-accent-blue/20 flex items-center gap-3">
               <Sparkles className="w-4 h-4 text-accent-purple" />
               <h2 className="text-sm font-black uppercase tracking-widest text-text-primary">Debrief Report</h2>
@@ -417,11 +411,7 @@ export default function PlayArenaPage() {
 
   return (
     <div className="relative max-w-6xl mx-auto min-h-[calc(100vh-6rem)] lg:min-h-[calc(100vh-7rem)] flex flex-col pt-2 pb-6 px-0 md:px-2">
-      {/* Background Arena Glows */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[10%] -left-[10%] w-64 h-64 md:w-[40vw] md:h-[40vw] rounded-full bg-emerald-500/10 blur-[120px] mix-blend-screen" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-64 h-64 md:w-[40vw] md:h-[40vw] rounded-full bg-rose-500/10 blur-[120px] mix-blend-screen" />
-      </div>
+
 
       <motion.div 
         animate={screenShake ? { x: [-15, 15, -15, 15, 0] } : {}}
@@ -430,13 +420,13 @@ export default function PlayArenaPage() {
       >
         
         {/* Top HUD: HP Bars */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 mb-4 bg-bg-glass p-3 sm:p-4 rounded-2xl backdrop-blur-3xl border border-border-primary shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 mb-4 bg-bg-glass p-3 sm:p-4 rounded-2xl backdrop- border border-border-primary shadow-none shadow-none">
           
           {/* Player Stats */}
           <div className="flex-1">
             <div className="flex justify-between mb-2">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-blue-500/20 flex items-center justify-center border border-emerald-500/30 shadow-none">
                   <User className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                 </div>
                 <div>
@@ -445,24 +435,24 @@ export default function PlayArenaPage() {
                 </div>
               </div>
               <div className="text-right flex flex-col justify-center">
-                <p className="font-black text-amber-400 text-lg sm:text-xl drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">{xp} <span className="text-[10px] sm:text-xs">XP</span></p>
+                <p className="font-black text-amber-400 text-lg sm:text-xl drop-shadow-none">{xp} <span className="text-[10px] sm:text-xs">XP</span></p>
                 <div className="flex gap-1 justify-end mt-0.5">
-                  {streak > 1 && <Badge variant="warning" className="text-[8px] font-black uppercase tracking-widest py-0 px-1 sm:px-1.5 animate-pulse bg-amber-500/20 text-amber-400 border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]">{streak}x</Badge>}
-                  {combo > 1 && <Badge variant="purple" className="text-[8px] font-black uppercase tracking-widest py-0 px-1 sm:px-1.5 animate-pulse bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.3)]">{combo}x</Badge>}
+                  {streak > 1 && <Badge variant="warning" className="text-[8px] font-black uppercase tracking-widest py-0 px-1 sm:px-1.5 animate-pulse bg-amber-500/20 text-amber-400 border border-amber-500/50 shadow-none">{streak}x</Badge>}
+                  {combo > 1 && <Badge variant="purple" className="text-[8px] font-black uppercase tracking-widest py-0 px-1 sm:px-1.5 animate-pulse bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-none">{combo}x</Badge>}
                 </div>
               </div>
             </div>
-            <div className="h-3 sm:h-4 bg-bg-tertiary rounded-full overflow-hidden border border-border-primary p-0.5 shadow-inner relative">
+            <div className="h-3 sm:h-4 bg-bg-tertiary rounded-full overflow-hidden border border-border-primary p-0.5 shadow-none relative">
               <motion.div 
                 animate={{ width: `${playerHp}%` }} 
-                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.8)] relative overflow-hidden" 
+                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full shadow-none relative overflow-hidden" 
               >
                 <div className="absolute inset-0 bg-bg-secondary animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               </motion.div>
             </div>
           </div>
 
-          <div className="text-xl sm:text-3xl font-black text-text-muted/30 italic px-2 sm:px-4 drop-shadow-2xl text-center">VS</div>
+          <div className="text-xl sm:text-3xl font-black text-text-muted/30 italic px-2 sm:px-4 drop-shadow-none text-center">VS</div>
 
           {/* Boss Stats */}
           <div className="flex-1">
@@ -470,7 +460,7 @@ export default function PlayArenaPage() {
               <div className="flex items-center gap-2 sm:gap-3 flex-row-reverse">
                 <motion.div 
                   animate={bossHit ? { scale: [1, 1.3, 1], filter: ["brightness(1)", "brightness(3)", "brightness(1)"] } : {}}
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-bl from-rose-500/20 to-orange-500/20 flex items-center justify-center border border-rose-500/50 shadow-[0_0_20px_rgba(244,63,94,0.4)]"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-bl from-rose-500/20 to-orange-500/20 flex items-center justify-center border border-rose-500/50 shadow-none"
                 >
                   <Skull className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400" />
                 </motion.div>
@@ -480,13 +470,13 @@ export default function PlayArenaPage() {
                 </div>
               </div>
               <div className="flex flex-col justify-center max-w-[60%]">
-                <Badge variant="danger" className="uppercase font-black tracking-widest bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0 sm:px-2 sm:py-0.5 text-[8px] sm:text-[10px] shadow-[0_0_15px_rgba(244,63,94,0.2)] truncate">{q.topic}</Badge>
+                <Badge variant="danger" className="uppercase font-black tracking-widest bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0 sm:px-2 sm:py-0.5 text-[8px] sm:text-[10px] shadow-none truncate">{q.topic}</Badge>
               </div>
             </div>
-            <div className="h-3 sm:h-4 bg-bg-tertiary rounded-full overflow-hidden border border-border-primary p-0.5 shadow-inner relative transform rotate-180">
+            <div className="h-3 sm:h-4 bg-bg-tertiary rounded-full overflow-hidden border border-border-primary p-0.5 shadow-none relative transform rotate-180">
               <motion.div 
                 animate={{ width: `${bossHp}%` }} 
-                className="h-full bg-gradient-to-r from-rose-600 to-rose-400 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.8)] relative overflow-hidden" 
+                className="h-full bg-gradient-to-r from-rose-600 to-rose-400 rounded-full shadow-none relative overflow-hidden" 
               >
                 <div className="absolute inset-0 bg-bg-secondary animate-shimmer bg-[length:200%_100%] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               </motion.div>
@@ -502,7 +492,7 @@ export default function PlayArenaPage() {
             <button 
               onClick={() => handlePowerup("fiftyFifty")} 
               disabled={powerups.fiftyFifty === 0 || showFeedback}
-              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.fiftyFifty > 0 ? "bg-bg-glass backdrop-blur-md text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
+              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.fiftyFifty > 0 ? "bg-bg-glass backdrop- text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 hover:shadow-none md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
             >
               {powerups.fiftyFifty > 0 && <div className="absolute inset-0 bg-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />}
               <SplitSquareHorizontal className="w-5 h-5 md:w-6 md:h-6 relative z-10" />
@@ -512,7 +502,7 @@ export default function PlayArenaPage() {
             <button 
               onClick={() => handlePowerup("freeze")} 
               disabled={powerups.freeze === 0 || showFeedback || frozen}
-              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.freeze > 0 ? "bg-bg-glass backdrop-blur-md text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
+              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.freeze > 0 ? "bg-bg-glass backdrop- text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:shadow-none md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
             >
               {powerups.freeze > 0 && <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />}
               <Snowflake className={`w-5 h-5 md:w-6 md:h-6 relative z-10 ${frozen ? 'animate-spin-slow' : ''}`} />
@@ -522,10 +512,10 @@ export default function PlayArenaPage() {
             <button 
               onClick={() => handlePowerup("shield")} 
               disabled={powerups.shield === 0 || showFeedback || shieldActive}
-              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.shield > 0 ? "bg-bg-glass backdrop-blur-md text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
+              className={`flex-1 md:w-full md:flex-none aspect-auto md:aspect-square py-2 md:py-0 rounded-xl md:rounded-2xl flex flex-col items-center justify-center gap-1 border border-border-primary transition-all duration-300 relative overflow-hidden group ${powerups.shield > 0 ? "bg-bg-glass backdrop- text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/50 hover:shadow-none md:hover:scale-105" : "bg-bg-secondary opacity-30 grayscale"}`}
             >
               {powerups.shield > 0 && <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />}
-              <Shield className={`w-5 h-5 md:w-6 md:h-6 relative z-10 ${shieldActive ? 'animate-pulse text-blue-300 drop-shadow-[0_0_10px_rgba(59,130,246,1)]' : ''}`} />
+              <Shield className={`w-5 h-5 md:w-6 md:h-6 relative z-10 ${shieldActive ? 'animate-pulse text-blue-300 drop-shadow-none' : ''}`} />
               <span className="text-[10px] font-black tracking-widest relative z-10">{powerups.shield}</span>
             </button>
           </div>
@@ -539,14 +529,14 @@ export default function PlayArenaPage() {
                 
                 <div className="text-center mb-4 md:mb-5 mt-5 md:mt-6 relative flex flex-col items-center justify-center">
                   {/* Timer Circle */}
-                  <div className={`absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 md:-top-6 md:w-12 md:h-12 rounded-full border-[3px] flex items-center justify-center bg-bg-primary backdrop-blur-xl font-black text-sm md:text-base z-20 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${timer > 10 ? "text-emerald-400 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]" : timer > 5 ? "text-amber-400 border-amber-500/80 shadow-[0_0_30px_rgba(245,158,11,0.5)] animate-pulse" : "text-rose-500 border-rose-500 shadow-[0_0_40px_rgba(244,63,94,0.8)] animate-bounce"}`}>
+                  <div className={`absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 md:-top-6 md:w-12 md:h-12 rounded-full border-[3px] flex items-center justify-center bg-bg-primary backdrop- font-black text-sm md:text-base z-20 transition-all duration-300 shadow-none ${timer > 10 ? "text-emerald-400 border-emerald-500/50 shadow-none" : timer > 5 ? "text-amber-400 border-amber-500/80 shadow-none animate-pulse" : "text-rose-500 border-rose-500 shadow-none animate-bounce"}`}>
                     {frozen ? <Snowflake className="w-4 h-4 md:w-5 md:h-5 text-cyan-400 animate-spin-slow" /> : timer}
                   </div>
                   
-                  <Card variant="glass" className="w-full pt-6 pb-4 px-4 md:pt-8 md:pb-5 md:px-6 bg-bg-glass backdrop-blur-3xl border border-border-primary relative shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] rounded-2xl md:rounded-3xl">
-                    {shieldActive && <div className="absolute inset-0 border-[3px] border-blue-500/50 rounded-2xl md:rounded-3xl animate-pulse pointer-events-none shadow-[inset_0_0_50px_rgba(59,130,246,0.3)]" />}
-                    {frozen && <div className="absolute inset-0 bg-cyan-500/10 pointer-events-none shadow-[inset_0_0_100px_rgba(6,182,212,0.2)] rounded-2xl md:rounded-3xl" />}
-                    <h2 className="text-sm md:text-base font-bold leading-relaxed text-text-primary drop-shadow-sm">{q.question}</h2>
+                  <Card variant="glass" className="w-full pt-6 pb-4 px-4 md:pt-8 md:pb-5 md:px-6 bg-bg-glass backdrop- border border-border-primary relative shadow-none shadow-none rounded-2xl md:rounded-3xl">
+                    {shieldActive && <div className="absolute inset-0 border-[3px] border-blue-500/50 rounded-2xl md:rounded-3xl animate-pulse pointer-events-none shadow-none" />}
+                    {frozen && <div className="absolute inset-0 bg-cyan-500/10 pointer-events-none shadow-none rounded-2xl md:rounded-3xl" />}
+                    <h2 className="text-sm md:text-base font-bold leading-relaxed text-text-primary drop-shadow-none">{q.question}</h2>
                   </Card>
                 </div>
 
@@ -555,13 +545,13 @@ export default function PlayArenaPage() {
                   {q.options.map((opt, i) => {
                     const isEliminated = eliminatedOptions.includes(i);
                     
-                    let styles = "bg-bg-glass backdrop-blur-xl border border-border-primary hover:border-accent-blue/50 hover:bg-accent-blue/10 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]";
+                    let styles = "bg-bg-glass backdrop- border border-border-primary hover:border-accent-blue/50 hover:bg-accent-blue/10 hover:shadow-none";
                     if (showFeedback) {
-                      if (i === q.correctAnswer) styles = "bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-[0_0_30px_rgba(16,185,129,0.3)] z-10 scale-[1.03]";
-                      else if (i === selected && i !== q.correctAnswer) styles = "bg-rose-500/20 border-rose-500 text-rose-300 shadow-[0_0_30px_rgba(244,63,94,0.3)] z-10 scale-[1.03]";
+                      if (i === q.correctAnswer) styles = "bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-none z-10 scale-[1.03]";
+                      else if (i === selected && i !== q.correctAnswer) styles = "bg-rose-500/20 border-rose-500 text-rose-300 shadow-none z-10 scale-[1.03]";
                       else styles = "bg-bg-secondary border-transparent opacity-30 scale-[0.98]";
                     } else if (i === selected) {
-                      styles = "bg-accent-blue/20 border-accent-blue text-accent-blue shadow-[0_0_30px_rgba(59,130,246,0.4)] scale-[1.03]";
+                      styles = "bg-accent-blue/20 border-accent-blue text-accent-blue shadow-none scale-[1.03]";
                     } else if (isEliminated) {
                       styles = "bg-bg-primary/10 border-transparent opacity-10 pointer-events-none scale-[0.98]";
                     }
@@ -574,12 +564,12 @@ export default function PlayArenaPage() {
                         {i === selected && !showFeedback && <div className="absolute inset-0 bg-accent-blue/10 rounded-xl md:rounded-2xl animate-pulse pointer-events-none" />}
                         
                         <div className="flex items-center relative z-10">
-                          <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-black text-[10px] md:text-xs mr-3 transition-colors shrink-0 ${i === selected && !showFeedback ? 'bg-accent-blue text-text-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]' : 'bg-bg-tertiary text-text-secondary'}`}>
+                          <span className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-black text-[10px] md:text-xs mr-3 transition-colors shrink-0 ${i === selected && !showFeedback ? 'bg-accent-blue text-text-primary shadow-none' : 'bg-bg-tertiary text-text-secondary'}`}>
                             {String.fromCharCode(65 + i)}
                           </span>
                           <span className="flex-1 leading-tight text-text-primary text-xs sm:text-sm">{opt}</span>
-                          {showFeedback && i === q.correctAnswer && <CheckCircle2 className="w-5 h-5 md:w-5 md:h-5 ml-2 text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]" />}
-                          {showFeedback && i === selected && i !== q.correctAnswer && <XCircle className="w-5 h-5 md:w-5 md:h-5 ml-2 text-rose-400 drop-shadow-[0_0_12px_rgba(244,63,94,0.9)]" />}
+                          {showFeedback && i === q.correctAnswer && <CheckCircle2 className="w-5 h-5 md:w-5 md:h-5 ml-2 text-emerald-400 drop-shadow-none" />}
+                          {showFeedback && i === selected && i !== q.correctAnswer && <XCircle className="w-5 h-5 md:w-5 md:h-5 ml-2 text-rose-400 drop-shadow-none" />}
                         </div>
                       </button>
                     );
@@ -594,21 +584,21 @@ export default function PlayArenaPage() {
             <div className="mt-2 shrink-0 order-3 z-20">
               {!showFeedback ? (
                  <div className="flex justify-center items-center pb-2 mt-2">
-                   <Button onClick={() => handleAnswer(selected)} disabled={selected === null} size="lg" className="w-full sm:w-64 h-10 sm:h-12 text-sm sm:text-base font-black uppercase tracking-widest rounded-xl bg-gradient-to-r from-accent-blue to-accent-purple hover:scale-[1.02] shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] transition-all duration-300 relative overflow-hidden group">
+                   <Button onClick={() => handleAnswer(selected)} disabled={selected === null} size="lg" className="w-full sm:w-64 h-10 sm:h-12 text-sm sm:text-base font-black uppercase tracking-widest rounded-xl bg-gradient-to-r from-accent-blue to-accent-purple hover:scale-[1.02] shadow-none hover:shadow-none transition-all duration-300 relative overflow-hidden group">
                      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer opacity-0 group-hover:opacity-100" />
                      <span className="relative z-10 flex items-center"><Zap className="w-4 h-4 sm:w-5 sm:h-5 mr-2 fill-current" /> Strike</span>
                    </Button>
                  </div>
               ) : (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
-                  className={`p-3 sm:p-4 rounded-xl md:rounded-2xl border backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${lastCorrect ? "bg-emerald-950/40 border-emerald-500/30 shadow-[inset_0_0_30px_rgba(16,185,129,0.1)]" : "bg-rose-950/40 border-rose-500/30 shadow-[inset_0_0_30px_rgba(244,63,94,0.1)]"}`}>
+                  className={`p-3 sm:p-4 rounded-xl md:rounded-2xl border backdrop- shadow-none ${lastCorrect ? "bg-emerald-950/40 border-emerald-500/30 shadow-none" : "bg-rose-950/40 border-rose-500/30 shadow-none"}`}>
                   <div className="flex flex-col sm:flex-row justify-between items-center h-full gap-3">
                     <div className="flex-1 w-full">
                       <div className="flex items-center gap-2 sm:gap-3 font-black text-sm sm:text-base mb-2 uppercase tracking-widest">
                         {lastCorrect ? (
-                          <><span className="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">Critical Hit!</span> <Badge variant="success" className="text-[10px] sm:text-xs px-2 py-0.5 font-black bg-emerald-500/20 text-emerald-400 border-emerald-500/50">+{100 * combo + Math.max(0, timer * 2)} XP</Badge></>
+                          <><span className="text-emerald-400 drop-shadow-none">Critical Hit!</span> <Badge variant="success" className="text-[10px] sm:text-xs px-2 py-0.5 font-black bg-emerald-500/20 text-emerald-400 border-emerald-500/50">+{100 * combo + Math.max(0, timer * 2)} XP</Badge></>
                         ) : (
-                          <><span className="text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">Damage Taken!</span> {shieldActive && <Badge variant="info" className="text-[10px] sm:text-xs px-2 py-0.5 font-black bg-blue-500/20 text-blue-400 border-blue-500/50">Blocked by Shield</Badge>}</>
+                          <><span className="text-rose-400 drop-shadow-none">Damage Taken!</span> {shieldActive && <Badge variant="info" className="text-[10px] sm:text-xs px-2 py-0.5 font-black bg-blue-500/20 text-blue-400 border-blue-500/50">Blocked by Shield</Badge>}</>
                         )}
                       </div>
                       
@@ -620,7 +610,7 @@ export default function PlayArenaPage() {
                       )}
                     </div>
                     
-                    <Button onClick={nextRound} size="sm" className="w-full sm:w-auto h-10 px-5 rounded-xl font-black text-xs uppercase tracking-widest shrink-0 bg-bg-tertiary hover:bg-bg-secondary border border-border-hover md:hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    <Button onClick={nextRound} size="sm" className="w-full sm:w-auto h-10 px-5 rounded-xl font-black text-xs uppercase tracking-widest shrink-0 bg-bg-tertiary hover:bg-bg-secondary border border-border-hover md:hover:scale-105 transition-all duration-300 shadow-none">
                       {playerHp <= 0 || bossHp <= 0 ? "Finish" : "Next Round"} <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>

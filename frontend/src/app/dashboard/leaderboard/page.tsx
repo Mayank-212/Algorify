@@ -96,19 +96,19 @@ export default function LeaderboardPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 relative pb-10">
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] right-[-5%] w-64 h-64 md:w-[30vw] md:h-[30vw] rounded-full bg-accent-amber/10 blur-[100px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-48 h-48 md:w-[25vw] md:h-[25vw] rounded-full bg-accent-purple/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute top-[-10%] right-[-5%] w-64 h-64 md:w-[30vw] md:h-[30vw] rounded-full bg-accent-amber/10  " />
+        <div className="absolute bottom-[-10%] left-[-5%] w-48 h-48 md:w-[25vw] md:h-[25vw] rounded-full bg-accent-purple/10  " />
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-primary pb-6">
         <div>
-          <h1 className="text-3xl font-black flex items-center gap-3 drop-shadow-sm">
+          <h1 className="text-3xl font-black flex items-center gap-3 drop-shadow-none">
             <Trophy className="w-8 h-8 text-amber-400" /> Global Leaderboard
           </h1>
           <p className="text-text-muted mt-2 font-medium">See how you stack up against top learners.</p>
         </div>
 
-        <div className="w-full md:w-auto bg-bg-glass p-1.5 rounded-xl border border-border-primary shadow-lg flex flex-col sm:flex-row gap-2">
+        <div className="w-full md:w-auto bg-bg-glass p-1.5 rounded-xl border border-border-primary shadow-none flex flex-col sm:flex-row gap-2">
           <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary pl-2 sm:hidden pt-1">Sort By</label>
           <select
             value={sortBy}
@@ -145,22 +145,22 @@ export default function LeaderboardPage() {
             >
               <Card 
                 variant="glass" 
-                className={`overflow-hidden transition-all duration-300 ${isCurrentUser ? "bg-accent-amber/10 border-accent-amber/30 shadow-[0_0_30px_rgba(251,191,36,0.15)] scale-[1.02]" : "bg-bg-glass hover:bg-bg-tertiary border-border-primary"}`}
+                className={`overflow-hidden transition-all duration-300 ${isCurrentUser ? "bg-accent-amber/10 border-accent-amber/30 shadow-none scale-[1.02]" : "bg-bg-glass hover:bg-bg-tertiary border-border-primary"}`}
               >
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4">
                     
                     {/* Rank */}
                     <div className="col-span-1 flex justify-center">
-                      {index === 0 ? <Medal className="w-8 h-8 text-amber-400 drop-shadow-md" /> :
-                       index === 1 ? <Medal className="w-8 h-8 text-gray-400 drop-shadow-md" /> :
-                       index === 2 ? <Medal className="w-8 h-8 text-amber-700 drop-shadow-md" /> :
+                      {index === 0 ? <Medal className="w-8 h-8 text-amber-400 drop-shadow-none" /> :
+                       index === 1 ? <Medal className="w-8 h-8 text-gray-400 drop-shadow-none" /> :
+                       index === 2 ? <Medal className="w-8 h-8 text-amber-700 drop-shadow-none" /> :
                        <span className={`text-xl font-black ${isCurrentUser ? "text-amber-400" : "text-text-muted"}`}>#{index + 1}</span>}
                     </div>
 
                     {/* Name & Level */}
                     <div className="col-span-5 flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border shadow-inner ${isCurrentUser ? "bg-gradient-to-br from-amber-400 to-rose-500 text-text-primary border-amber-300/50" : "bg-bg-tertiary text-text-primary border-border-primary"}`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border shadow-none ${isCurrentUser ? "bg-gradient-to-br from-amber-400 to-rose-500 text-text-primary border-amber-300/50" : "bg-bg-tertiary text-text-primary border-border-primary"}`}>
                         {player.name.charAt(0).toUpperCase()}
                       </div>
                       <div>

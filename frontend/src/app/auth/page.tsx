@@ -98,13 +98,13 @@ export default function AuthPage() {
     <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4 relative overflow-hidden">
       
       {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-blue/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-blue/10 rounded-full  pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/10 rounded-full  pointer-events-none" />
       
-      <div className="w-full max-w-md bg-bg-secondary/80 backdrop-blur-3xl border border-border-primary rounded-[2rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative z-10">
+      <div className="w-full max-w-md bg-bg-secondary/80 backdrop- border border-border-primary rounded-[2rem] p-8 shadow-none relative z-10">
         
         <div className="flex justify-center mb-6">
-          <img src="/logo.png" alt="Algorify Logo" className="w-16 h-16 rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.3)] border border-white/10" />
+          <img src="/logo.png" alt="Algorify Logo" className="w-16 h-16 rounded-2xl shadow-none border border-white/10" />
         </div>
 
         <div className="text-center mb-6">
@@ -172,7 +172,7 @@ export default function AuthPage() {
           <Button 
             type="submit" 
             disabled={!email || !password || isLoading}
-            className="w-full h-12 mt-2 rounded-xl font-black uppercase tracking-widest text-xs bg-gradient-to-r from-accent-blue to-accent-purple hover:scale-[1.02] shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all duration-300 relative overflow-hidden group"
+            className="w-full h-12 mt-2 rounded-xl font-black uppercase tracking-widest text-xs bg-gradient-to-r from-accent-blue to-accent-purple hover:scale-[1.02] shadow-none hover:shadow-none transition-all duration-300 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.3)_50%,transparent_75%)] bg-[length:250%_250%] animate-shimmer opacity-0 group-hover:opacity-100" />
             <span className="relative z-10 flex items-center justify-center">
@@ -191,7 +191,7 @@ export default function AuthPage() {
         <button 
           onClick={handleGoogleLogin}
           type="button"
-          className="w-full h-12 rounded-xl font-bold text-sm bg-white text-black hover:bg-gray-200 transition-colors flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+          className="w-full h-12 rounded-xl font-bold text-sm bg-white text-black hover:bg-gray-200 transition-colors flex items-center justify-center gap-3 shadow-none"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

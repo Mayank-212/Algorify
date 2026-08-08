@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { mockLearningTwin } from "@/lib/mock-data";
 import https from "https";
 
 export async function POST(req: Request) {
@@ -24,11 +23,12 @@ Student Profile:
 
 Write highly-tuned, highly-focused conversational responses. 
 CRITICAL RULES FOR FORMATTING:
-1. DO NOT use hashes (# or ##) for headers.
-2. DO NOT use dollar signs ($ or $$) for math or LaTeX. Write math out plainly or use simple text formats.
-3. Remove all "faltu stuff" (unnecessary fluff or overly long bullet lists). Be direct, conversational, and impactful.
-4. If the user asks to see a picture, or if showing a real image is highly beneficial, output EXACTLY: [IMAGE: description].
-5. If recommending a video tutorial would help, output EXACTLY: [YOUTUBE: specific search query]. Our system will embed a video link for them.`;
+1. Write in a deeply humanized, natural tone. Format your text like beautiful personal notebook notes. Avoid rigid AI phrasing or generic structures.
+2. DO NOT use hashes (# or ##) for headers.
+3. DO NOT use dollar signs ($ or $$) for math or LaTeX. Write math out plainly or use simple text formats.
+4. Remove all "faltu stuff" (unnecessary fluff or overly long bullet lists). Be direct, conversational, and impactful.
+5. If the user asks to see a picture, or if showing a real image is highly beneficial, output EXACTLY: [IMAGE: description].
+6. If recommending a video tutorial would help, output EXACTLY: [YOUTUBE: specific search query]. Our system will embed a video link for them.`;
 
     if (debateMode) {
       systemInstruction += `\n\n⚠️ DEBATE MODE IS ENABLED: Do not immediately give the answer! Instead, challenge the student's reasoning. Ask follow-up questions, point out potential flaws in their logic, and force them to think critically. Act as a Socratic mentor.`;

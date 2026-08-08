@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { supabase } from "./supabase";
+import type { ChatMessage } from "@/types";
 
 export interface MemoryEntry {
   id: string;
@@ -27,6 +28,9 @@ export interface StudentProfile {
   tutorConversations: number;
   booksUploaded: number;
   lastActive: string;
+  chatHistory: ChatMessage[];
+  learningStyle: string;
+  preferredExplanationStyle: string;
 }
 
 interface MemoryContextType {
@@ -40,6 +44,8 @@ interface MemoryContextType {
   recordFocusSession: (minutes: number, mode: string) => void;
   getTopicMemory: (topic: string) => MemoryEntry[];
   getProfileSummary: () => string;
+  updateChatHistory: (messages: ChatMessage[]) => void;
+  clearChatHistory: () => void;
 }
 
 const initialStudentProfile: StudentProfile = {
@@ -56,6 +62,9 @@ const initialStudentProfile: StudentProfile = {
   tutorConversations: 0,
   booksUploaded: 0,
   lastActive: new Date().toISOString(),
+  chatHistory: [],
+  learningStyle: "visual",
+  preferredExplanationStyle: "analogies",
 };
 
 const MemoryContext = createContext<MemoryContextType | null>(null);
@@ -218,16 +227,29 @@ export function MemoryProvider({ children }: { children: React.ReactNode }) {
 
   const recordQuizResults = useCallback((totalQuestions: number, correctAnswersCount: number) => {
     setStudentProfile((prev) => {
-      const lastActiveDate = new Date(prev.lastActive).toDateString();
-      const todayDate = new Date().toDateString();
-      const isConsecutiveDay = lastActiveDate !== todayDate;
+      const lastActive = new Date(prev.lastActive);
+      const today = new Date();
+      lastActive.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      
+      const diffTime = Math.abs(today.getTime() - lastActive.getTime());
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      
+      let newStreak = prev.streakDays;
+      if (diffDays === 1) {
+        newStreak += 1;
+      } else if (diffDays > 1) {
+        newStreak = 1;
+      } else if (newStreak === 0) {
+        newStreak = 1;
+      }
       
       return {
         ...prev,
         quizzesPlayed: prev.quizzesPlayed + 1,
         questionsAnswered: prev.questionsAnswered + totalQuestions,
         correctAnswers: prev.correctAnswers + correctAnswersCount,
-        streakDays: isConsecutiveDay ? prev.streakDays + 1 : Math.max(prev.streakDays, 1),
+        streakDays: newStreak,
       };
     });
   }, []);
@@ -242,6 +264,20 @@ export function MemoryProvider({ children }: { children: React.ReactNode }) {
     return `Level ${studentProfile.level} Student (${studentProfile.totalXP} XP). Top Strength: ${topStrength}. Top Weakness: ${topWeakness}. Playing on a ${studentProfile.streakDays} day streak.`;
   }, [studentProfile]);
 
+  const updateChatHistory = useCallback((messages: ChatMessage[]) => {
+    setStudentProfile((prev) => ({
+      ...prev,
+      chatHistory: messages,
+    }));
+  }, []);
+
+  const clearChatHistory = useCallback(() => {
+    setStudentProfile((prev) => ({
+      ...prev,
+      chatHistory: [],
+    }));
+  }, []);
+
   return (
     <MemoryContext.Provider
       value={{
@@ -255,6 +291,8 @@ export function MemoryProvider({ children }: { children: React.ReactNode }) {
         recordFocusSession,
         getTopicMemory,
         getProfileSummary,
+        updateChatHistory,
+        clearChatHistory,
       }}
     >
       {children}

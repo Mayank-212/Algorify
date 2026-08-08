@@ -54,7 +54,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative">
       <div className="absolute inset-0 grid-pattern opacity-30" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-accent-purple/10 rounded-full blur-[120px]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-accent-purple/10 rounded-full " />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

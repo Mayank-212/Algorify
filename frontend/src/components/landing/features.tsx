@@ -6,14 +6,14 @@ import { Brain, Target, BarChart3, BookOpen, Calendar, Zap, MessageSquare, Trend
 const features = [
   {
     icon: Brain,
-    title: "AI Learning Twin",
+    title: "Algorify Learning Twin",
     description: "A digital profile that mirrors how you learn — tracking confidence, style, and pace in real time.",
     color: "text-purple-400",
     bg: "bg-purple-500/10",
   },
   {
     icon: MessageSquare,
-    title: "Adaptive AI Tutor",
+    title: "Adaptive Algorify Mentor",
     description: "Get explanations tailored to your learning style. Simple, detailed, analogies — it knows what works for you.",
     color: "text-blue-400",
     bg: "bg-blue-500/10",

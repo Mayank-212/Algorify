@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { history, twin } = await req.json();
+    const { history, profile } = await req.json();
     
     if (!process.env.MISTRAL_API_KEY) {
       return NextResponse.json({ error: "Missing MISTRAL_API_KEY" }, { status: 500 });
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
 
     const systemInstruction = `You are Algorify, an elite AI Learning Twin.
-The student just completed a quiz. Here is their profile: ${JSON.stringify(twin)}
+The student just completed a quiz. Here is their profile: ${JSON.stringify(profile)}
 
 Here is their performance history on the quiz:
 ${JSON.stringify(history, null, 2)}

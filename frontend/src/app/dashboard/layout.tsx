@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/tutor", label: "AI Tutor", icon: MessageSquare },
+  { href: "/dashboard/tutor", label: "Algorify Mentor", icon: MessageSquare },
   { href: "/dashboard/quiz", label: "Play Arena", icon: FileQuestion },
   { href: "/dashboard/space", label: "Learning Space", icon: Library },
   { href: "/dashboard/cowriter", label: "Co-Writer", icon: PenTool },
@@ -101,14 +101,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 flex flex-col border-r border-border-primary bg-bg-secondary/95 backdrop-blur-xl transition-all duration-300",
+          "fixed lg:static inset-y-0 left-0 z-50 flex flex-col border-r border-border-primary bg-bg-secondary/95 backdrop- transition-all duration-300",
           collapsed ? "lg:w-[72px]" : "lg:w-64",
           sidebarOpen ? "w-64 translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Logo */}
         <div className={cn("h-16 flex items-center border-b border-border-primary px-4", collapsed ? "justify-center" : "gap-3")}>
-          <img src="/logo.png" alt="Algorify Logo" className="w-8 h-8 rounded-lg shrink-0 border border-border-primary shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
+          <img src="/logo.png" alt="Algorify Logo" className="w-8 h-8 rounded-lg shrink-0 border border-border-primary shadow-none" />
           {!collapsed && <span className="font-bold text-lg">Algorify</span>}
           <button
             onClick={() => setSidebarOpen(false)}
@@ -184,7 +184,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-16 border-b border-border-primary flex items-center px-4 lg:px-6 bg-bg-primary/80 backdrop-blur-xl shrink-0">
+        <header className="h-16 border-b border-border-primary flex items-center px-4 lg:px-6 bg-bg-primary/80 backdrop- shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden mr-4 text-text-muted hover:text-text-primary"

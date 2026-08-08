@@ -123,13 +123,19 @@ def _query_llm(system_prompt: str, user_prompt: str) -> str:
     }
 
     try:
-        response = requests.post(Config.MISTRAL_API_URL, headers=headers, json=payload, timeout=30)
+        response = requests.post(Config.MISTRAL_API_URL, headers=headers, json=payload, timeout=120)
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"]
-    except requests.RequestException as e:
+    except requests.exceptions.Timeout:
+        logger.error("LLM API request timed out.")
+        raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="The AI provider took too long to respond. Please try a shorter video.")
+    except Exception as e:
         logger.error(f"LLM API request failed: {str(e)}")
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Failed to communicate with LLM provider.")
+        error_detail = f"Failed to communicate with LLM provider. Details: {str(e)}"
+        if hasattr(e, 'response') and e.response is not None:
+            error_detail += f" Status: {e.response.status_code}. Response: {e.response.text}"
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=error_detail)
 
 
 def _extract_video_id(url: str) -> Optional[str]:
@@ -243,6 +249,8 @@ async def query_document(req: QueryRequest):
     system_prompt = (
         "You are the 'Algorify Co-Writer'. "
         "Your task is to accurately answer the user's question using ONLY the provided book context below. "
+        "CRITICAL: Write in a highly humanized, conversational tone. Format your response exactly like beautifully handwritten notebook notes using markdown. "
+        "Use expressive formatting (bolding key terms, using natural bullet points, breaking concepts into digestible sections) that looks natural, not rigidly AI-generated. "
         "If the answer is not in the text, inform the user you cannot find it in the provided document."
     )
     user_prompt = f"Book Content:\n{safe_context}\n\nStudent Question:\n{req.query}"
@@ -276,7 +284,9 @@ async def generate_video_notes(req: YouTubeRequest):
     system_prompt = (
         "You are Algorify's elite note-taker. Create beautifully styled, highly structured, "
         "and comprehensive markdown notes in English based ONLY on the provided video context. "
-        "Use H1/H2/H3 headers, bullet points, emojis, and emphasize key takeaways. "
+        "CRITICAL: Your output MUST look like human-written notebook notes. Do NOT use generic AI structures. "
+        "Use expressive markdown, creative formatting (like emojis, bold highlights for emphasis), "
+        "and write with a natural, humanized, and conversational flow. Make it feel personal and engaging, like a student's premium notebook. "
         "Include a concise 'Summary' section at the top."
     )
     

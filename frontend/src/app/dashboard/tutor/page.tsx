@@ -9,8 +9,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import { Mermaid } from "@/components/ui/mermaid";
-import { mockChatHistory, suggestedQuestions, mockLearningTwin } from "@/lib/mock-data";
 import { generateId } from "@/lib/utils";
 import type { ChatMessage } from "@/types";
 import {
@@ -19,7 +17,7 @@ import {
 import { useMemory } from "@/lib/memory-store";
 
 export default function TutorPage() {
-  const { profile } = useMemory();
+  const { profile, updateChatHistory, clearChatHistory } = useMemory();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -83,11 +81,32 @@ export default function TutorPage() {
     }
   }, []);
 
+  // Sync messages with profile chat history on load
+  useEffect(() => {
+    if (messages.length === 0 && profile.chatHistory.length > 0) {
+      setMessages(profile.chatHistory);
+    } else if (messages.length === 0 && profile.chatHistory.length === 0 && profile.lastActive) {
+      // Dynamic initial greeting based on real user profile
+      const topicToDiscuss = profile.weaknesses.length > 0 ? profile.weaknesses[0] : "your next learning milestone";
+      setMessages([{
+        id: generateId(),
+        role: "assistant",
+        content: `Hey there! I'm Algorify, your personalized learning twin. 🧠 I noticed you've been working hard lately. Let's tackle ${topicToDiscuss} together. What would you like to explore today?`,
+        timestamp: new Date().toISOString(),
+      }]);
+    }
+  }, [profile.chatHistory, messages.length]);
+
+  useEffect(() => {
+    // Only update the global store if we have new messages that aren't already saved
+    if (messages.length > 0 && messages !== profile.chatHistory) {
+      updateChatHistory(messages);
+    }
+  }, [messages, updateChatHistory]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isTyping]);
-
-  const twin = mockLearningTwin;
 
   const handleSend = async (textOverride?: string | React.MouseEvent) => {
     const textToSend = typeof textOverride === 'string' ? textOverride : input;
@@ -242,9 +261,9 @@ export default function TutorPage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Brain className="w-6 h-6 text-accent-purple" />
-            AI Tutor
+            Algorify Mentor
           </h1>
-          <p className="text-sm text-text-muted mt-1">Personalized to your learning style: <span className="text-accent-purple">{twin.preferredExplanationStyle}</span></p>
+          <p className="text-sm text-text-muted mt-1">Personalized to your learning style: <span className="text-accent-purple">{profile.preferredExplanationStyle}</span></p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -284,6 +303,17 @@ export default function TutorPage() {
             <Scale className="w-4 h-4" />
             {debateMode ? 'Debate Mode: ON' : 'Debate Mode: OFF'}
           </button>
+          
+          <button
+            onClick={() => {
+              setMessages([]);
+              clearChatHistory();
+            }}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer border bg-bg-tertiary/50 text-rose-400 border-rose-500/20 hover:border-rose-500/50"
+            title="Clear Chat History"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -318,10 +348,10 @@ export default function TutorPage() {
                                 href={href} 
                                 target="_blank" 
                                 rel="noreferrer"
-                                className="my-4 p-4 border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 rounded-xl flex items-center gap-4 w-max transition-all shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] no-underline group inline-flex"
+                                className="my-4 p-4 border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 rounded-xl flex items-center gap-4 w-max transition-all shadow-none hover:shadow-none no-underline group inline-flex"
                               >
                                 <span className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <MonitorPlay className="w-6 h-6 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                                  <MonitorPlay className="w-6 h-6 text-red-500 drop-shadow-none" />
                                 </span>
                                 <span className="flex flex-col text-left">
                                   <strong className="text-red-400 font-bold">Watch Video Tutorial</strong>
@@ -331,17 +361,6 @@ export default function TutorPage() {
                             );
                           }
                           return <a href={href} className="text-accent-blue hover:underline" target="_blank" {...props}>{children}</a>;
-                        },
-                        code({ node, inline, className, children, ...props }: any) {
-                          const match = /language-(\w+)/.exec(className || "");
-                          if (!inline && match && match[1] === "mermaid") {
-                            return <Mermaid chart={String(children).replace(/\n$/, "")} />;
-                          }
-                          return (
-                            <code className={className} {...props}>
-                              {children}
-                            </code>
-                          );
                         }
                       }}
                     >
@@ -396,7 +415,13 @@ export default function TutorPage() {
         {/* Suggestions (show when no user messages yet) */}
         {messages.length <= 1 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-            {suggestedQuestions.map((q) => (
+            {[
+              `Can you explain ${profile.weaknesses[0] || "a complex topic"} using a real-world analogy?`,
+              `I keep making mistakes in ${profile.weaknesses[1] || "my studies"}, can you help me figure out why?`,
+              "Let's do a quick, low-stakes quiz to test my knowledge.",
+              `I'm feeling a bit stuck on ${profile.topicsExplored[0] || "this topic"}. Can we break it down?`,
+              "I have an exam next week and I'm stressed. What should I focus on?"
+            ].map((q) => (
               <button
                 key={q}
                 onClick={() => handleSuggestion(q)}

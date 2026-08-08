@@ -170,13 +170,13 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Glow effect */
+/* Glow effect removed for minimalism */
 .glow {
-  box-shadow: 0 0 40px -10px rgba(139, 92, 246, 0.3);
+  /* box-shadow removed */
 }
 
 .glow-blue {
-  box-shadow: 0 0 40px -10px rgba(59, 130, 246, 0.3);
+  /* box-shadow removed */
 }
 
 /* Pulse dot */
@@ -352,21 +352,9 @@ body {
   }
 }
 
-/* Ambient glow blobs */
+/* Ambient glow blobs removed for minimalism */
 .ambient-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.4;
-  animation: blob-float 20s infinite ease-in-out alternate;
-}
-
-@keyframes blob-float {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(30px, -50px) scale(1.1); }
-  100% { transform: translate(-30px, 20px) scale(0.9); }
+  display: none;
 }
 
 /* Floating animation for chat bubbles */

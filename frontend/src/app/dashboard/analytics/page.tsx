@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
-import { Badge, ProgressBar } from "@/components/ui/badge";
 import { useMemory } from "@/lib/memory-store";
 import {
-  BarChart3, TrendingUp, TrendingDown, Minus,
-  Brain, Flame, Target, BookOpen, Sparkles, Loader2, AlertTriangle, ShieldCheck
+  Brain, Flame, Target, Sparkles, Loader2, AlertTriangle, ShieldCheck,
+  Activity, Database, Network
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis,
@@ -39,7 +38,7 @@ Total XP: ${profile.totalXP}
 Streak: ${profile.streakDays} days
 Recent Mistakes: ${JSON.stringify(profile.recentMistakes)}
 
-Provide a concise, 3-bullet point AI diagnostic of my learning patterns and immediate action items.`
+Provide a concise, highly professional 3-bullet point AI diagnostic of my cognitive retention patterns and immediate action items using data science terminology.`
           }]
         })
       });
@@ -67,49 +66,51 @@ Provide a concise, 3-bullet point AI diagnostic of my learning patterns and imme
     ? Math.round((profile.correctAnswers / profile.questionsAnswered) * 100) 
     : 0;
 
-  const accuracyData = [
-    { date: "Day -4", accuracy: Math.max(0, currentAcc - 12) },
-    { date: "Day -3", accuracy: Math.max(0, currentAcc - 5) },
-    { date: "Day -2", accuracy: Math.max(0, currentAcc - 8) },
-    { date: "Day -1", accuracy: Math.max(0, currentAcc - 2) },
-    { date: "Today", accuracy: currentAcc },
+  const retentionData = [
+    { date: "Day -6", decay: 45, retention: Math.max(0, currentAcc - 12) },
+    { date: "Day -5", decay: 35, retention: Math.max(0, currentAcc - 8) },
+    { date: "Day -4", decay: 40, retention: Math.max(0, currentAcc - 15) },
+    { date: "Day -3", decay: 20, retention: Math.max(0, currentAcc - 5) },
+    { date: "Day -2", decay: 25, retention: Math.max(0, currentAcc - 8) },
+    { date: "Day -1", decay: 10, retention: Math.max(0, currentAcc - 2) },
+    { date: "Today", decay: 5, retention: currentAcc },
   ];
 
   const radarData = profile.topicsExplored.length > 0 
     ? profile.topicsExplored.map((t) => ({
         subject: t.length > 12 ? t.substring(0,10) + ".." : t,
         mastery: profile.strengths.includes(t) ? 95 : profile.weaknesses.includes(t) ? 35 : 65
-      })).slice(-6) // Last 6 topics
+      })).slice(-6) 
     : [
-      { subject: "Play", mastery: 0 },
-      { subject: "Arena", mastery: 0 },
-      { subject: "To", mastery: 0 },
-      { subject: "Build", mastery: 0 },
-      { subject: "Stats", mastery: 0 },
+      { subject: "Baseline", mastery: 20 },
+      { subject: "Logic", mastery: 40 },
+      { subject: "Recall", mastery: 60 },
+      { subject: "Analysis", mastery: 30 },
+      { subject: "Synthesis", mastery: 50 },
     ];
 
   return (
     <motion.div variants={stagger} initial="hidden" animate="show" className="max-w-7xl mx-auto space-y-6">
-      <motion.div variants={fadeUp} className="flex justify-between items-center">
+      <motion.div variants={fadeUp} className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-border-primary">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Brain className="w-6 h-6 text-accent-purple" /> Memory Engine & Diagnostics</h1>
-          <p className="text-text-muted mt-1">Real-time student cognitive profile and weakness graph.</p>
+          <h1 className="text-3xl font-black tracking-tight"><Database className="w-8 h-8 text-accent-purple inline mr-2 mb-1" /> Memory Engine</h1>
+          <p className="text-text-muted mt-1 font-medium">Cognitive retention analytics and knowledge graph.</p>
         </div>
         <button 
           onClick={generateDiagnostic}
           disabled={loadingInsight}
-          className="bg-accent-purple/20 text-accent-purple border border-accent-purple/30 px-4 py-2 rounded-xl text-sm font-bold hover:bg-accent-purple hover:text-text-primary transition-all flex items-center gap-2"
+          className="bg-bg-primary border border-border-primary text-text-primary px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest font-black hover:border-accent-purple hover:text-accent-purple transition-all flex items-center gap-2"
         >
-          {loadingInsight ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {loadingInsight ? "Analyzing..." : "Generate AI Memory Diagnostic"}
+          {loadingInsight ? <Loader2 className="w-4 h-4 animate-spin" /> : <Network className="w-4 h-4" />}
+          {loadingInsight ? "Compiling..." : "Run AI Diagnostic"}
         </button>
       </motion.div>
 
       {insight && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card variant="glass" className="p-6 border-2 border-accent-purple/40 bg-accent-purple/5">
-            <h3 className="font-bold text-accent-purple flex items-center gap-2 mb-2"><Sparkles className="w-4 h-4" /> AI Cognitive Assessment</h3>
-            <div className="text-sm text-text-primary leading-relaxed whitespace-pre-line">{insight}</div>
+          <Card className="p-6 border border-accent-purple/30 bg-accent-purple/5 rounded-2xl shadow-none">
+            <h3 className="text-xs font-black uppercase tracking-widest text-accent-purple flex items-center gap-2 mb-3"><Sparkles className="w-4 h-4" /> AI Cognitive Assessment</h3>
+            <div className="text-sm font-medium text-text-primary leading-relaxed whitespace-pre-line">{insight}</div>
           </Card>
         </motion.div>
       )}
@@ -117,45 +118,53 @@ Provide a concise, 3-bullet point AI diagnostic of my learning patterns and imme
       {/* Summary Cards */}
       <motion.div variants={fadeUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Accumulated XP", value: `${profile.totalXP} XP`, icon: Brain, color: "text-purple-400", bg: "bg-purple-500/10" },
-          { label: "Active Streak", value: `${profile.streakDays} Days`, icon: Flame, color: "text-orange-400", bg: "bg-orange-500/10" },
-          { label: "Active Weaknesses", value: `${profile.weaknesses.length} Topics`, icon: AlertTriangle, color: "text-rose-400", bg: "bg-rose-500/10" },
-          { label: "Mastered Concepts", value: `${profile.strengths.length} Topics`, icon: ShieldCheck, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+          { label: "Memory Index", value: `${profile.totalXP}`, trend: "Growing", icon: Brain, color: "text-accent-purple" },
+          { label: "Retention Rate", value: `${currentAcc}%`, trend: "Stable", icon: ShieldCheck, color: "text-accent-cyan" },
+          { label: "Cognitive Debt", value: `${profile.weaknesses.length}`, trend: "Nodes", icon: AlertTriangle, color: "text-rose-500" },
+          { label: "Consolidated Nodes", value: `${profile.strengths.length}`, trend: "Nodes", icon: Target, color: "text-text-primary" },
         ].map((s) => (
-          <Card key={s.label} variant="glass" hoverable className="p-4">
+          <Card key={s.label} className="p-5 border border-border-primary bg-bg-secondary rounded-2xl shadow-none">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs text-text-muted">{s.label}</p>
-                <p className="text-2xl font-bold mt-1">{s.value}</p>
+                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">{s.label}</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-3xl font-black tracking-tight">{s.value}</p>
+                  <span className="text-[10px] font-bold text-text-muted uppercase">{s.trend}</span>
+                </div>
               </div>
-              <div className={`${s.bg} ${s.color} w-10 h-10 rounded-xl flex items-center justify-center`}>
-                <s.icon className="w-5 h-5" />
-              </div>
+              <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
           </Card>
         ))}
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Accuracy trend */}
+        {/* Retention vs Decay chart */}
         <motion.div variants={fadeUp}>
-          <Card variant="glass">
-            <CardHeader><CardTitle>Accuracy Trend</CardTitle></CardHeader>
+          <Card className="border border-border-primary bg-bg-secondary rounded-2xl shadow-none h-full">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2"><Activity className="w-4 h-4 text-accent-cyan" /> Retention vs Decay Rate</CardTitle>
+            </CardHeader>
             <CardContent>
-              <div className="h-56">
+              <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={accuracyData}>
+                  <AreaChart data={retentionData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                      <linearGradient id="colorRetentionArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="colorDecayArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
+                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(63,63,70,0.3)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[40, 100]} tick={{ fontSize: 11, fill: "#71717a" }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ background: "#18181b", border: "1px solid rgba(63,63,70,0.5)", borderRadius: "12px", fontSize: "12px" }} />
-                    <Area type="monotone" dataKey="accuracy" stroke="#8b5cf6" fill="url(#areaGrad)" strokeWidth={2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-primary)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--color-text-muted)", fontWeight: 600 }} axisLine={false} tickLine={false} dy={10} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--color-text-muted)", fontWeight: 600 }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ background: "var(--color-bg-tertiary)", border: "1px solid var(--color-border-primary)", borderRadius: "8px", fontSize: "12px", fontWeight: 600, boxShadow: "none" }} />
+                    <Area type="monotone" dataKey="retention" name="Retention %" stroke="#06b6d4" strokeWidth={2} fill="url(#colorRetentionArea)" />
+                    <Area type="monotone" dataKey="decay" name="Decay Rate %" stroke="#f43f5e" strokeWidth={2} fill="url(#colorDecayArea)" strokeDasharray="5 5" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -165,16 +174,19 @@ Provide a concise, 3-bullet point AI diagnostic of my learning patterns and imme
 
         {/* Radar chart */}
         <motion.div variants={fadeUp}>
-          <Card variant="glass">
-            <CardHeader><CardTitle>Knowledge Radar</CardTitle></CardHeader>
+          <Card className="border border-border-primary bg-bg-secondary rounded-2xl shadow-none h-full">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2"><Network className="w-4 h-4 text-accent-purple" /> Cognitive Vector Map</CardTitle>
+            </CardHeader>
             <CardContent>
-              <div className="h-56">
+              <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="rgba(63,63,70,0.3)" />
-                    <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#a1a1aa" }} />
+                  <RadarChart data={radarData} outerRadius="75%">
+                    <PolarGrid stroke="var(--color-border-primary)" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "var(--color-text-primary)", fontWeight: 700 }} />
                     <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                    <Radar name="Mastery" dataKey="mastery" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
+                    <Radar name="Mastery Level" dataKey="mastery" stroke="#8b5cf6" strokeWidth={2} fill="#8b5cf6" fillOpacity={0.15} />
+                    <Tooltip contentStyle={{ background: "var(--color-bg-tertiary)", border: "1px solid var(--color-border-primary)", borderRadius: "8px", fontSize: "12px", fontWeight: 600, boxShadow: "none" }} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -183,26 +195,41 @@ Provide a concise, 3-bullet point AI diagnostic of my learning patterns and imme
         </motion.div>
       </div>
 
-      {/* Persistent Misconceptions */}
+      {/* Persistent Misconceptions Table */}
       <motion.div variants={fadeUp}>
-        <Card variant="glass" className="p-6">
-          <CardHeader className="p-0 mb-4"><CardTitle>Tracked Misconceptions & Weaknesses</CardTitle></CardHeader>
+        <Card className="border border-border-primary bg-bg-secondary rounded-2xl shadow-none p-6">
+          <CardHeader className="p-0 mb-6">
+            <CardTitle className="text-sm font-black uppercase tracking-widest">Cognitive Debt & Misconception Log</CardTitle>
+          </CardHeader>
           <CardContent className="p-0">
             {profile.recentMistakes.length === 0 ? (
-              <div className="p-6 text-center text-text-muted border border-border-primary rounded-xl bg-bg-tertiary/20">
-                No mistakes tracked yet. Play Arena battle results automatically update this index.
+              <div className="p-6 text-center text-sm font-medium text-text-muted border border-border-primary rounded-xl bg-bg-tertiary">
+                No cognitive debt recorded. Matrix is optimal.
               </div>
             ) : (
-              <div className="space-y-3">
-                {profile.recentMistakes.map((m, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 flex flex-col gap-1">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-rose-400 uppercase tracking-widest">{m.topic}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-text-primary">Question: {m.question}</p>
-                    <p className="text-xs text-rose-300">Misconception: {m.misconception}</p>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-[10px] uppercase tracking-widest text-text-muted border-b border-border-primary">
+                    <tr>
+                      <th className="pb-3 font-bold">Node (Topic)</th>
+                      <th className="pb-3 font-bold">Assessment Context</th>
+                      <th className="pb-3 font-bold">Identified Misconception</th>
+                      <th className="pb-3 font-bold text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-primary">
+                    {profile.recentMistakes.map((m, idx) => (
+                      <tr key={idx} className="group hover:bg-bg-tertiary transition-colors">
+                        <td className="py-4 pr-4 font-bold text-text-primary">{m.topic}</td>
+                        <td className="py-4 pr-4 text-text-muted font-medium max-w-[200px] truncate">{m.question}</td>
+                        <td className="py-4 pr-4 text-rose-500 font-medium">{m.misconception}</td>
+                        <td className="py-4 text-right">
+                          <span className="inline-block px-2 py-1 text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-500 rounded border border-rose-500/20">Active</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </CardContent>

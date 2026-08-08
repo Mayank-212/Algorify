@@ -243,19 +243,19 @@ export default function LandingPage() {
       
       {/* ─── DEEP PARALLAX BACKGROUND ─── */}
       <motion.div style={{ y: yBg }} className="fixed inset-0 z-0 pointer-events-none opacity-50">
-        <div className="absolute top-[-10%] left-[-20%] w-[80vw] h-[80vw] rounded-full bg-accent-blue/10 blur-[150px] mix-blend-screen animate-pulse duration-10000" />
-        <div className="absolute bottom-[-10%] right-[-20%] w-[70vw] h-[70vw] rounded-full bg-accent-purple/10 blur-[150px] mix-blend-screen" />
-        <div className="absolute top-[50%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-accent-rose/5 blur-[120px] mix-blend-screen" />
+        <div className="absolute top-[-10%] left-[-20%] w-[80vw] h-[80vw] rounded-full bg-accent-blue/10   animate-pulse duration-10000" />
+        <div className="absolute bottom-[-10%] right-[-20%] w-[70vw] h-[70vw] rounded-full bg-accent-purple/10  " />
+        <div className="absolute top-[50%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-accent-rose/5  " />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       </motion.div>
 
       {/* ─── NAVIGATION ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#020202]/30 backdrop-blur-2xl border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#020202]/30 backdrop- border-b border-white/5">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="Algorify Logo" className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
+          <img src="/logo.png" alt="Algorify Logo" className="w-8 h-8 rounded-lg shadow-none" />
           <span className="font-black text-lg tracking-tight text-white uppercase">Algorify</span>
         </div>
-        <Button onClick={handleStart} variant="outline" className="rounded-full border-white/10 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] backdrop-blur-md">
+        <Button onClick={handleStart} variant="outline" className="rounded-full border-white/10 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-none hover:shadow-none backdrop-">
           Sign In
         </Button>
       </nav>
@@ -265,7 +265,7 @@ export default function LandingPage() {
         {/* ─── HERO SECTION ─── */}
         <section className="flex flex-col items-center justify-center min-h-[95vh] px-4 text-center max-w-6xl mx-auto pt-20">
           <FadeIn direction="up">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-purple/10 border border-accent-purple/20 text-[10px] sm:text-xs font-black uppercase tracking-widest text-accent-purple mb-8 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-purple/10 border border-accent-purple/20 text-[10px] sm:text-xs font-black uppercase tracking-widest text-accent-purple mb-8 shadow-none">
               <Heart className="w-4 h-4" /> Built with empathy for the modern student
             </div>
           </FadeIn>
@@ -286,7 +286,7 @@ export default function LandingPage() {
           </FadeIn>
 
           <FadeIn direction="up" delay={0.3}>
-            <Button onClick={handleStart} size="lg" className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm bg-white text-black hover:bg-gray-200 hover:scale-[1.03] shadow-[0_0_50px_rgba(255,255,255,0.3)] hover:shadow-[0_0_70px_rgba(255,255,255,0.5)] transition-all duration-300">
+            <Button onClick={handleStart} size="lg" className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm bg-white text-black hover:bg-gray-200 hover:scale-[1.03] shadow-none hover:shadow-none transition-all duration-300">
               Find Your Study Twin <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </FadeIn>
@@ -314,9 +314,9 @@ export default function LandingPage() {
                     key={feature.id}
                     onClick={() => setActiveFeature(index)}
                     whileHover={{ scale: 1.02 }}
-                    className={`p-6 rounded-3xl cursor-pointer transition-all duration-300 border backdrop-blur-md flex flex-col items-start text-left h-48 ${
+                    className={`p-6 rounded-3xl cursor-pointer transition-all duration-300 border backdrop- flex flex-col items-start text-left h-48 ${
                       isActive 
-                        ? `bg-[#111] ${feature.border} shadow-[0_0_30px_rgba(255,255,255,0.05)]` 
+                        ? `bg-[#111] ${feature.border} shadow-none` 
                         : "bg-white/5 border-white/5 hover:bg-white/10"
                     }`}
                   >
@@ -338,7 +338,7 @@ export default function LandingPage() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="absolute inset-0 bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 rounded-[2rem] overflow-hidden flex flex-col shadow-2xl"
+                  className="absolute inset-0 bg-[#0a0a0a]/80 backdrop- border border-white/10 rounded-[2rem] overflow-hidden flex flex-col shadow-none"
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1 ${features[activeFeature].bg}`} />
                   
@@ -369,14 +369,14 @@ export default function LandingPage() {
         {/* ─── FINAL CTA ─── */}
         <section className="py-40 px-4 text-center relative z-20">
           <FadeIn>
-            <div className="max-w-5xl mx-auto bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-[3rem] p-16 md:p-24 backdrop-blur-sm relative overflow-hidden shadow-2xl group">
+            <div className="max-w-5xl mx-auto bg-gradient-to-b from-white/5 to-transparent border border-white/10 rounded-[3rem] p-16 md:p-24 backdrop- relative overflow-hidden shadow-none group">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-1 bg-gradient-to-r from-transparent via-accent-purple to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
               
               <h2 className="text-5xl md:text-7xl font-black tracking-tight text-white mb-8 leading-tight">The ultimate <br/>learning ecosystem.</h2>
               <p className="text-text-muted text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-medium">8 integrated tools. 1 centralized memory engine. Experience the future of adaptive, AI-driven education today.</p>
               
-              <Button onClick={handleStart} size="lg" className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm bg-white text-black hover:bg-gray-200 hover:scale-[1.05] shadow-[0_0_50px_rgba(255,255,255,0.4)] hover:shadow-[0_0_80px_rgba(255,255,255,0.6)] transition-all duration-300">
+              <Button onClick={handleStart} size="lg" className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm bg-white text-black hover:bg-gray-200 hover:scale-[1.05] shadow-none hover:shadow-none transition-all duration-300">
                 Enter Algorify
               </Button>
             </div>

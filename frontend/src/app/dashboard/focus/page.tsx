@@ -138,13 +138,13 @@ export default function ZenModePage() {
       {/* Ambient glowing background reacting to breathing */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 transition-all duration-[4000ms] ease-in-out"
            style={{ opacity: isActive ? (breathePhase === "in" ? 0.8 : breathePhase === "hold" ? 1 : 0.3) : 0.2 }}>
-        <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full bg-accent-cyan/20 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full bg-accent-purple/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full bg-accent-cyan/20  " />
+        <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full bg-accent-purple/20  " />
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-border-primary pb-6">
         <div>
-          <h1 className="text-3xl font-black flex items-center gap-3 drop-shadow-sm">
+          <h1 className="text-3xl font-black flex items-center gap-3 drop-shadow-none">
             <Wind className="w-8 h-8 text-accent-cyan" /> Zen Mode
           </h1>
           <p className="text-text-muted mt-2 font-medium">Breathe, focus, and melt your frustration away.</p>
@@ -164,14 +164,14 @@ export default function ZenModePage() {
                  opacity: isActive ? (breathePhase === "hold" ? 0.8 : 0.4) : 0.2
                }}
                transition={{ duration: breathePhase === "hold" ? 2 : 4, ease: "easeInOut" }}
-               className="w-64 h-64 rounded-full border-4 border-accent-cyan shadow-[0_0_50px_rgba(6,182,212,0.5)]"
+               className="w-64 h-64 rounded-full border-4 border-accent-cyan shadow-none"
              />
              <motion.div 
                animate={{ 
                  scale: isActive ? (breathePhase === "in" ? 1.2 : breathePhase === "hold" ? 1.2 : 0.8) : 0.8,
                }}
                transition={{ duration: breathePhase === "hold" ? 2 : 4, ease: "easeInOut", delay: 0.2 }}
-               className="absolute w-64 h-64 rounded-full border-2 border-accent-purple shadow-[inset_0_0_50px_rgba(168,85,247,0.5)]"
+               className="absolute w-64 h-64 rounded-full border-2 border-accent-purple shadow-none"
              />
           </div>
 
@@ -185,7 +185,7 @@ export default function ZenModePage() {
               </motion.div>
             )}
 
-            <div className="text-[6rem] md:text-[8rem] font-black tracking-tighter tabular-nums drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+            <div className="text-[6rem] md:text-[8rem] font-black tracking-tighter tabular-nums drop-shadow-none">
               {formatTime(timeLeft)}
             </div>
             
@@ -193,7 +193,7 @@ export default function ZenModePage() {
               <Button 
                 onClick={toggleTimer}
                 size="lg"
-                className={`h-16 px-8 rounded-2xl font-black tracking-widest uppercase transition-all duration-300 ${isActive ? 'bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-text-primary border border-rose-500/50' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-text-primary border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]'}`}
+                className={`h-16 px-8 rounded-2xl font-black tracking-widest uppercase transition-all duration-300 ${isActive ? 'bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-text-primary border border-rose-500/50' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-text-primary border border-emerald-500/50 shadow-none'}`}
               >
                 {isActive ? <><Square className="w-6 h-6 mr-3" /> Pause</> : <><Play className="w-6 h-6 mr-3" /> {timeLeft === (mode === "pomodoro" ? pomodoroDuration*60 : 0) ? "Start" : "Resume"}</>}
               </Button>
@@ -219,13 +219,13 @@ export default function ZenModePage() {
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button 
                 onClick={() => { setMode("pomodoro"); setTimeLeft(pomodoroDuration * 60); setIsActive(false); }}
-                className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${mode === "pomodoro" ? "bg-accent-purple/20 text-accent-purple border-accent-purple/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
+                className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${mode === "pomodoro" ? "bg-accent-purple/20 text-accent-purple border-accent-purple/50 shadow-none" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
               >
                 Pomodoro
               </button>
               <button 
                 onClick={() => { setMode("stopwatch"); setTimeLeft(0); setIsActive(false); }}
-                className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${mode === "stopwatch" ? "bg-accent-blue/20 text-accent-blue border-accent-blue/50 shadow-[0_0_15px_rgba(59,130,246,0.2)]" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
+                className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${mode === "stopwatch" ? "bg-accent-blue/20 text-accent-blue border-accent-blue/50 shadow-none" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
               >
                 Stopwatch
               </button>
@@ -253,7 +253,7 @@ export default function ZenModePage() {
                 <button 
                   key={s}
                   onClick={() => setSound(s)}
-                  className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-between ${sound === s ? "bg-accent-cyan/20 text-accent-cyan border-accent-cyan/50 shadow-[0_0_15px_rgba(6,182,212,0.2)]" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
+                  className={`p-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-between ${sound === s ? "bg-accent-cyan/20 text-accent-cyan border-accent-cyan/50 shadow-none" : "bg-bg-card text-text-muted border-border-primary hover:text-text-primary"}`}
                 >
                   {s === "none" ? "Silent Focus" : s === "lofi" ? "Lo-Fi Chill Beats" : "Heavy Rain & Nature"}
                   {sound === s && <Headphones className="w-4 h-4" />}

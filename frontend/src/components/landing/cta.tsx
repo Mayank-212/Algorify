@@ -16,9 +16,9 @@ export function CTA() {
           className="relative rounded-3xl overflow-hidden"
         >
           <div className="absolute inset-0 animated-gradient opacity-20" />
-          <div className="absolute inset-0 bg-bg-primary/60 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-bg-primary/60 backdrop-" />
           <div className="relative z-10 px-8 py-16 md:px-16 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center mx-auto mb-6 shadow-none">
               <Brain className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
